@@ -27,6 +27,9 @@ class UnivariatePolynomial {
             }
             m_coefficients = m_coefficients.head(i+1).eval();
         }
+        void setCoeffs(const Eigen::Ref<const Vector> & v) {
+            m_coefficients = v;
+        }
 
         UnivariatePolynomial<Scalar> d() {
             Vector ret = Vector::Zero(this->size()-1);
@@ -36,19 +39,29 @@ class UnivariatePolynomial {
             return UnivariatePolynomial<Scalar>{ret};
 
         }
+        Scalar d(Scalar x) {
+            return this->d().eval();
+        }
         UnivariatePolynomial<Scalar> i() {
             Vector ret = Vector::Zero(this->size()+1);
             for(int k=0; k < this->size(); ++k) {
                 ret(k+1) = 1.0/Scalar(k+1) * this->coeffs()(k);
             }
             return UnivariatePolynomial<Scalar>{ret};
-
         }
+
+        Scalar i(Scalar a, Scalar b) {
+            UnivariatePolynomial<Scalar> intf(this->i());
+            return intf.eval(b) - intf.eval(a);
+        }
+
+
         Scalar eval(Scalar x) {
             Scalar ret=0;
-            for(int i=coeffs().rows()-1; i >= 0; --i) {
+            for(int i=coeffs().rows()-1; i > 0; --i) {
                 ret = x*(coeffs()(i) + ret);
             }
+            ret += coeffs()(0);
             return ret;
         }
 
@@ -93,6 +106,16 @@ UnivariatePolynomial<Scalar> operator+(const UnivariatePolynomial<Scalar> & lhs,
     v.head(rhs.size()).noalias() += rhs.coeffs();
 
     return UnivariatePolynomial<Scalar>(v);
+}
+template <typename Scalar>
+UnivariatePolynomial<Scalar> & operator+=(UnivariatePolynomial<Scalar> & lhs,const UnivariatePolynomial<Scalar> & rhs) {
+    typedef typename UnivariatePolynomial<Scalar>::Vector Vector;
+    int maxsize = std::max(lhs.size(),rhs.size());
+    Vector v(Vector::Zero(maxsize));
+    v.head(lhs.size()) = lhs.coeffs();
+    v.head(rhs.size()).noalias() += rhs.coeffs();
+    lhs.setCoeffs(v);
+    return lhs;
 }
 template <typename Scalar>
 UnivariatePolynomial<Scalar> operator-(const UnivariatePolynomial<Scalar> & lhs,const UnivariatePolynomial<Scalar> & rhs) {

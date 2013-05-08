@@ -1,12 +1,14 @@
 #include "univariatepolynomial.h"
 
 #include <vector>
+#include <iostream>
 #include <cassert>
 
 template <typename Scalar>
 class LegendrePolynomials {
     public:
     typedef UnivariatePolynomial<Scalar> Polynomial;
+    typedef typename Polynomial::Vector Vector;
     LegendrePolynomials(int depth=2): m_polynomials(depth) {
             assert(depth > 2);
 
@@ -19,5 +21,28 @@ class LegendrePolynomials {
         }
     }
     const Polynomial & get(int depth){return m_polynomials[depth];}
+
+    Vector project(Polynomial f) {
+        int maxsize = m_polynomials.size();
+        Vector v(maxsize);
+        for(int i=0; i < maxsize; ++i) {
+            auto& b = m_polynomials[i];
+            v(i) = (f*b).i(-1,1) / (b*b).i(-1,1);
+        }
+        return v;
+    }
+
+    Polynomial getPoly(const Vector & coeffs) {
+        Polynomial p;
+        for(int i=0; i < m_polynomials.size(); ++i) {
+            p += coeffs(i) * m_polynomials[i];
+            
+        }
+        return p;
+    }
+
+
+
+    private:
     std::vector<Polynomial> m_polynomials;
 };
