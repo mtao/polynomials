@@ -1,7 +1,6 @@
 #ifndef UNIVAR_POLY_H
 #define UNIVAR_POLY_H
 #include <Eigen/Dense>
-#include <iomanip>
 
 template <typename Scalar>
 class UnivariatePolynomial {
@@ -30,10 +29,19 @@ class UnivariatePolynomial {
         }
 
         UnivariatePolynomial<Scalar> d() {
-            UnivariatePolynomial<Scalar> ret(Vector::Zero(size()-1));
-            for(int i=1; i < this->size(); ++i) {
-                ret(i-1) = i * this->coeffs()(i);
+            Vector ret = Vector::Zero(this->size()-1);
+            for(int k=1; k < this->size(); ++k) {
+                ret(k-1) = k * this->coeffs()(k);
             }
+            return UnivariatePolynomial<Scalar>{ret};
+
+        }
+        UnivariatePolynomial<Scalar> i() {
+            Vector ret = Vector::Zero(this->size()+1);
+            for(int k=0; k < this->size(); ++k) {
+                ret(k+1) = 1.0/Scalar(k+1) * this->coeffs()(k);
+            }
+            return UnivariatePolynomial<Scalar>{ret};
 
         }
         Scalar eval(Scalar x) {
@@ -101,4 +109,8 @@ UnivariatePolynomial<Scalar> operator-(const UnivariatePolynomial<Scalar> & othe
     return UnivariatePolynomial<Scalar>(-other->coeffs());
 }
 
+template <typename Scalar>
+bool operator==(const UnivariatePolynomial<Scalar> & lhs, const UnivariatePolynomial<Scalar> & rhs) {
+    return lhs.size() == rhs.size() && lhs.coeffs() == rhs.coeffs();
+}
 #endif
