@@ -1,0 +1,38 @@
+CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
+PROJECT( Polynomials )
+
+
+
+
+
+SET(CMAKE_RUNTIME_OUTPUT_DIR ${PROJECT_BINARY_DIR}/bin)
+SET(CMAKE_LIBRARY_OUTPUT_DIR ${PROJECT_BINARY_DIR}/lib)
+SET(CMAKE_ARCHIVE_OUTPUT_DIR ${PROJECT_BINARY_DIR}/lib)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include $ENV{Polynomials_PATH})
+
+ADD_DEFINITIONS(-std=c++11)
+ADD_DEFINITIONS(-Wall)
+ADD_DEFINITIONS(-Werror)
+
+SET(Polynomials_SOURCES
+    )
+SET(Polynomials_HEADERS
+    include/univariatepolynomial.h
+    include/univariatelegendre.h
+    )
+
+ADD_CUSTOM_TARGET(headers SOURCES ${Polynomials_HEADERS})
+
+#SET (CMAKE_CXX_COMPILER             "/usr/bin/clang++")
+#SET (CMAKE_CXX_COMPILER             "/usr/bin/g++")
+INSTALL(FILES ${Polynomials_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Polynomials)
+
+
+ENABLE_TESTING()
+ADD_SUBDIRECTORY(tests EXCLUDE_FROM_ALL)
+
+
+
+
+
