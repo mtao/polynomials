@@ -2,7 +2,7 @@
 #define UNIVAR_POLY_H
 #include <Eigen/Dense>
 
-template <typename Scalar>
+template <typename Scalar, bool Shave=true>
 class UnivariatePolynomial {
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -21,6 +21,12 @@ class UnivariatePolynomial {
         void compactify() {
             int i=m_coefficients.rows()-1;
             if(i==0) return;
+            if(Shave) {
+                for(int i=0; i < size(); ++i) {
+                    if (std::abs(m_coefficients(i)) < 1e-10)
+                        m_coefficients(i) = 0;
+                }
+            }
             while(i > 1 && m_coefficients(i) == Scalar(0))
             {
                 --i;
