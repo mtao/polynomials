@@ -31,7 +31,7 @@ class UnivariatePolynomial {
             {
                 --i;
             }
-            m_coefficients = m_coefficients.head(i+1).eval();
+            m_coefficients.conservativeResize(i+1);
         }
         void setCoeffs(const Eigen::Ref<const Vector> & v) {
             m_coefficients = v;
